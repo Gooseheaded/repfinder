@@ -1,5 +1,114 @@
 {% extends "base.html" %}
 {% block body %}
+<div class="container">
+    <div class="row">
+        <p>{{ settings.status.name }}</p>
+    </div>
+</div>
+{% if settings.status.name == "OK" %}
+<div class="container">
+    <div class="row">
+        <p>Good job.</p>
+    </div>
+</div>
+{% elif settings.status.name == "SCREP_MISSING" %}
+<!-- Modal for fixing screp -->
+<div class="container">
+    <div class="row">
+        <div class="modal fade" id="fixScrepModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            aria-labelledby="fixScrepModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="fixScrepModalLabel">Please update your settings</h1>
+                    </div>
+                    <div class="modal-body">
+                        <p>Your settings file is not configured properly: the path to the screp executable is not
+                            valid.</p>
+                        <ul>
+                            <li>Inside your settings file:
+                                <pre>{{ settings.filePath }}</pre>
+                            </li>
+                            <li>Fix this value:
+                                <pre>screp_path = {{ settings.screpPath }}</pre>
+                            </li>
+                        </ul>
+                        <p>Repfinder will not work until this is fixed!</p>
+                        <p>Please update your settings file, then refresh this page to try again.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        window.onload = function () {
+            new bootstrap.Modal(document.getElementById('fixScrepModal')).show();
+        };
+    </script>
+</div>
+{% elif settings.status.name == "REPLAYS_MISSING" %}
+<!-- Modal for fixing replays folder -->
+<div class="container">
+    <div class="row">
+        <div class="modal fade" id="fixReplaysModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            aria-labelledby="fixReplaysModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="fixReplaysModalLabel">Please update your settings</h1>
+                    </div>
+                    <div class="modal-body">
+                        <p>Your settings file is not configured properly: the replays folder is not valid.</p>
+                        <ul>
+                            <li>Inside your settings file:
+                                <pre>{{ settings.filePath }}</pre>
+                            </li>
+                            <li>Fix this value:
+                                <pre>replays_folder = {{ settings.replaysPath }}</pre>
+                            </li>
+                        </ul>
+                        <p>Repfinder will not work until this is fixed!</p>
+                        <p>Please update your settings file, then refresh this page to try again.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        window.onload = function () {
+            new bootstrap.Modal(document.getElementById('fixReplaysModal')).show();
+        };
+    </script>
+</div>
+{% elif settings.status.name == "UNINITIALIZED" %}
+<!-- Modal for settings up the app! -->
+<div class="container">
+    <div class="row">
+        <div class="modal fade" id="uninitializedSettingsModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            aria-labelledby="uninitializedSettingsModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="uninitializedSettingsModalLabel">Welcome to Repfinder!</h1>
+                    </div>
+                    <div class="modal-body">
+                        <p>Repfinder uses a settings file to know where to look for replays and where screp is installed.</p>
+                        <p>Please update your settings file, here:</p>
+                        <p><pre>{{ settings.filePath }}</pre></p>
+                        <p>Repfinder will not work without the proper settings!</p>
+                        <p>Simply refresh this page after you are done to begin using Repfinder.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        window.onload = function () {
+            new bootstrap.Modal(document.getElementById('uninitializedSettingsModal')).show();
+        };
+    </script>
+</div>
+{% endif %}
 <div class="container text-center">
     <div class="row">
         <div class="col">
