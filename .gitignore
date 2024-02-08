@@ -163,3 +163,4 @@ cython_debug/
 search_results/
 repfinder_settings.ini
 repfinder.zip
+rfdb.json

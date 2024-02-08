@@ -1,6 +1,6 @@
 from typing import List
 from pathlib import Path
-from enum import Enum, auto
+from enum import Enum
 import json
 
 
@@ -25,14 +25,13 @@ class Label():
         return f'<span class="badge rounded-pill text-bg-{self.labelColor.value}">{self.text}</span>'
 
     def toJSON(self):
-        return json.dumps({"text": self.text, "labelColor": self.labelColor.name})
+        return f'{"text": "{self.text}", "labelColor": "{self.labelColor.name}""}'
 
 
 class Race(Enum):
-    Protoss = auto()
-    Terran = auto()
-    Zerg = auto()
-
+    Protoss = "Protoss"
+    Terran = "Terran"
+    Zerg = "Zerg"
 
 class Player():
     def __init__(self, primaryAlias: str, aliases: List[str]):
@@ -41,45 +40,37 @@ class Player():
         self.aliases.add(self.primaryAlias)
 
     def toJSON(self) -> str:
-        return json.dumps({"primaryAlias": self.primaryAlias, "aliases": list(self.aliases)})
+        quotedAliases = [f'"{alias}"' for alias in self.aliases]
+        return f'{{"primaryAlias": "{self.primaryAlias}", "aliases": [{", ".join(quotedAliases)}]}}'
 
 
 class AliasAndRace():
-    def __init__(self, player: Player, race: Race):
-        self.alias = player.primaryAlias
-        self.race = race.name
+    def __init__(self, alias: str, race: Race):
+        self.alias = alias
+        self.race = race
 
     def toJSON(self) -> str:
-        return json.dumps({"alias": self.alias, "race": self.race})
-
-
-class Map():
-    def __init__(self, name: str, playerCount: int, previewImagePath: Path):
-        self.name = name
-        self.playerCount = playerCount
-        self.previewImagePath = previewImagePath.resolve()
-
-    def toJSON(self) -> str:
-        return json.dumps({"name": self.name, "playerCount": self.playerCount, "previewImagePath": str(self.previewImagePath)})
-
+        return f'{{"alias": "{self.alias}", "race": "{self.race}"}}'
 
 class Replay():
-    def __init__(self, path: Path, map: Map, players: List[AliasAndRace], labels: List[Label]):
+    def __init__(self, path: Path, mapName: str, aliases: List[AliasAndRace], labels: List[Label]=None):
         self.path = path.resolve()
-        self.mapName = map.name
-        self.players = players.copy()
-        self.labels = labels.copy()
+        self.mapName = mapName
+        self.aliases = aliases.copy()
+        if labels is None: 
+            self.labels = []
+        else:
+            self.labels = labels.copy()
 
     def toJSON(self) -> str:
-        # TODO: Properly serialize self.players array instead of JSON-stringifying it.
-        # TODO: serialize labels
-        return json.dumps({"path": str(self.path), "mapName": self.mapName, "players": [player.toJSON() for player in self.players]})
+        jsonAliases = [alias.toJSON() for alias in self.aliases]
+        return f'{{"path": "{str(self.path.as_posix())}", "mapName": "{self.mapName}", "aliases": [{", ".join(jsonAliases)}]}}'
 
 
 class RFDB():
     def __init__(self, dbPath: Path):
-        self._dbPath = dbPath.resolve()
-        self._replays = set()
+        self._dbPath = dbPath
+        self._replays = dict()
         self._labelDefs = set()
         self._playerDefs = dict()
 
@@ -88,32 +79,65 @@ class RFDB():
         pass
 
     def save(self):
-        # TODO: Serialize replays, and write to the replay json db.
-        # TODO: Serialize label definitions, and write to the labels json db.
-        # TODO: Serialize player definitions, and write to the players json db.
-        pass
+        # TODO: Abstract away storage
+        # TODO: Sweet mother mercy please do this whole serialization the right way
+        replaysJsonStrs = []
+        for replay in self._replays.values():
+            replaysJsonStrs.append(replay.toJSON())
 
-    def addReplay(self, replay: Replay):
-        self._replays.add(replay)
+        playerDefsJsonStrs = []
+        for playerDef in self._playerDefs:
+            playerDefsJsonStrs.append(playerDef.toJSON())
+
+        labelDefsJsonStrs = []
+        for labelDef in self._labelDefs:
+            labelDefsJsonStrs.append(labelDef.toJSON())
+        saveJsonStr = "{"
+        saveJsonStr += "\"replays\": ["
+        saveJsonStr +=  ",".join(replaysJsonStrs)
+        saveJsonStr += "],"
+        saveJsonStr += "\"playerDefs\": ["
+        saveJsonStr +=  ",".join(playerDefsJsonStrs)
+        saveJsonStr += "],"
+        saveJsonStr += "\"labelDefs\": ["
+        saveJsonStr +=  ",".join(labelDefsJsonStrs)
+        saveJsonStr += "]"
+        saveJsonStr += "}"
+
+        with open(Path(self._dbPath) / "rfdb.json", "w") as dbFile:
+            dbFile.write(saveJsonStr)
+        return True
+
+    def createReplay(self, replay: Replay):
+        self._replays[str(replay.path)] = replay
+        return self.save()
+    
+    def readReplay(self, path: Path):
+        path = path.resolve()
+        if not path.is_file():
+            raise Exception(f"There is no replay at the given path: {path}")
+        if not path in self._replays:
+            # TODO: Avoid using None.
+            return None        
+        return self._replays[path]
+
+    def deleteReplay(self, replay: Replay):
+        del self._replays[str(replay.path)]
         self.save()
 
-    def removeReplay(self, replay: Replay):
-        self._replays.discard(replay)
-        self.save()
-
-    def addPlayer(self, player: Player):
+    def createPlayer(self, player: Player):
         self._playerDefs[player.primaryAlias] = player
         self.save()
 
-    def removePlayer(self, player: Player):
+    def deletePlayer(self, player: Player):
         del self._playerDefs[player.primaryAlias]
         self.save()
 
-    def addLabel(self, label: Label):
+    def createLabel(self, label: Label):
         self._labelDefs.add(label)
         self.save()
 
-    def removeLabel(self, label: Label):
+    def deleteLabel(self, label: Label):
         self._labelDefs.discard(label)
         # TODO: Remove all references to this label from replays.
         self.save()

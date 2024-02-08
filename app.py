@@ -3,6 +3,7 @@
 #
 
 from flask import Flask, render_template
+from repfinder import Repfinder
 import rfsettings
 import rfdb
 import webbrowser
@@ -17,17 +18,12 @@ def index():
     global settings
 
     # Testing serialization.
-    testPlayer = rfdb.Player("Gooseheaded", ["NCs]Gus", "CPL-Goose"])
-    print(f"testPlayer: {testPlayer.toJSON()}")
-
-    testAliasAndRace = rfdb.AliasAndRace(testPlayer, rfdb.Race.Zerg)
-    print(f"testAliasAndRace: {testAliasAndRace.toJSON()}")
-
-    testMap = rfdb.Map("Destination", 2, Path.cwd())
-    print(f"testMap: {testMap.toJSON()}")
-
-    testReplay = rfdb.Replay(Path.cwd(), testMap, [testAliasAndRace])
-    print(f"testReplay: {testReplay.toJSON()}")
-
-    settings = rfsettings.init()
+    print(f"settings.dbPath is {settings.dbPath} ({type(settings.dbPath)})")
+    testDb = rfdb.RFDB(settings.dbPath)
+    repfinder = Repfinder(settings, testDb)
+    # repfinder.registerReplay(Path("C:/Users/gctrindade local/Documents/Starcraft/maps/replays/coach fuzzy fac block.rep").resolve())
+    repfinder.syncDb()
     return render_template('index.html', settings=settings)
+
+def test():
+    global settings
