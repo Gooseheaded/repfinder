@@ -88,9 +88,9 @@ class RFDB():
                 parsedAliases = [AliasAndRace(
                     entry["alias"], entry["race"]) for entry in replayJson["aliases"]]
                 self.replays[replayJson["path"]] = Replay(path=Path(replayJson["path"]).resolve(),
-                                                           mapName=replayJson["mapName"],
-                                                           aliases=parsedAliases,
-                                                           labels=replayJson["labels"])
+                                                          mapName=replayJson["mapName"],
+                                                          aliases=parsedAliases,
+                                                          labels=replayJson["labels"])
         # TODO: Parse label definitions and player definitions.
             # self._labelDefs = parse dbJson["labelDefs"]
             # self._playerDefs = parse dbJson["playerDefs"]

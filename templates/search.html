@@ -1,3 +1,27 @@
+<script>
+    const fadeOutPopOver = function (idx, path) {
+        const thisButton = document.getElementById(`popOver${idx}`);
+        thisButton.disabled = true;
+        navigator.clipboard.writeText(path);
+
+        const bsPopOverBody = bootstrap.Popover.getOrCreateInstance(`#popOver${idx}`);
+        let opacity = 1;
+        let intervalId = -1;
+        const fadeOut = function () {
+            const popOverBody = document.getElementsByClassName('popover')[0];
+            opacity -= 0.05;
+            if (popOverBody === undefined) return;
+            popOverBody.style.opacity = opacity;
+
+            if (opacity <= 0) {
+                bsPopOverBody.hide();
+                thisButton.disabled = false;
+                clearInterval(intervalId);
+            }
+        }
+        setTimeout(() => intervalId = setInterval(fadeOut, 10), 500);
+    };
+</script>
 <div class="container text-center">
     <div class="row justify-content-center">
         <div class="col-12">

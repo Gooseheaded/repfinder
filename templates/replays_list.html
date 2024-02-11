@@ -1,4 +1,10 @@
 <div class="container">
+    <script>
+        (function () {
+            const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+            const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));
+        })();
+    </script>
     <div class="row justify-content-center">
         <table class="table">
             <thead>
@@ -9,11 +15,15 @@
                     <th scope="col">Players</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody hx-boost="false">
                 {% for idx, replay in replays %}
                 <tr>
                     <th scope="row">{{ idx }}</th>
-                    <td>{# replay.id #}<br/><a href="#"  data-toggle="tooltip" data-original-title="This is my tooltip" onclick="navigator.clipboard.writeText('{{ replay.path.as_posix() }}');">Copy path</a><br/>{{ replay.path }}</td>
+                    <td>{# replay.id #}<br />
+                        <button id="popOver{{ idx }}" data-bs-animation="true" type="button"
+                            class="btn btn-lg btn-danger" onclick="fadeOutPopOver({{ idx }}, '{{ replay.path.as_posix() }}')" data-bs-toggle="popover" data-bs-content="Copied successfully!">Copy path</button>
+                        <br />{{ replay.path }}
+                    </td>
                     <td>{{ replay.mapName }}</td>
                     <td>
                         <ul>

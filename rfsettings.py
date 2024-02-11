@@ -26,6 +26,7 @@ def init() -> Settings:
         parser['repfinder'] = {
             'screp_path': '<Your screp path goes here>',
             'replays_folder': '<Your replays folder goes here>',
+            'db_folder': '<Your db folder goes here>',
         }
         with open(settingsFilePath, "w") as settingsFile:
             parser.write(settingsFile)
