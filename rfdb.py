@@ -5,6 +5,7 @@ from enum import Enum
 import json
 from human_id import generate_id
 
+
 class LabelColor(Enum):
     Blue = "primary"
     Gray = "secondary"
@@ -87,10 +88,11 @@ class RFDB():
             for replayJson in replaysJson:
                 parsedAliases = [AliasAndRace(
                     entry["alias"], entry["race"]) for entry in replayJson["aliases"]]
-                self.replays[replayJson["path"]] = Replay(path=Path(replayJson["path"]).resolve(),
-                                                          mapName=replayJson["mapName"],
-                                                          aliases=parsedAliases,
-                                                          labels=replayJson["labels"])
+                replay = Replay(path=Path(replayJson["path"]).resolve(),
+                                mapName=replayJson["mapName"],
+                                aliases=parsedAliases,
+                                labels=replayJson["labels"])
+                self.replays[replay.id] = replay
         # TODO: Parse label definitions and player definitions.
             # self._labelDefs = parse dbJson["labelDefs"]
             # self._playerDefs = parse dbJson["playerDefs"]

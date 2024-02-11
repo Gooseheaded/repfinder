@@ -145,3 +145,6 @@ class Repfinder():
 	def filterReplaysByLabels(self, replays: dict, labels:List[str]) -> dict:
 		# TODO
 		pass
+
+	def getReplayById(self, replayId:str) -> Replay:
+		return self.db.readReplay(replayId)
