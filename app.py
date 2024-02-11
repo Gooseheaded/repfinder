@@ -53,13 +53,7 @@ def openReplay(replayId):
     replay = repfinder.getReplayById(replayId)
     if replay is None:
          return "Open"
-    if sys.platform == "darwin":
-        subprocess.check_call(["open", "--", replay.path.parent])
-    elif sys.platform == "linux2":
-        subprocess.check_call(["xdg-open", "--", replay.path.parent])
-    elif sys.platform == "win32":
-        # Explorer.exe always returns 1, so `call_check` will report a non-zero exit status as failure.
-        subprocess.call(["explorer", replay.path])
+    webbrowser.open(replay.path)
     return "Open"
     
 
