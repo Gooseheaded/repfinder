@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base.jinja2" %}
 {% block body %}
 {% if settings.status.name == "OK" %}
 {% elif settings.status.name == "SCREP_MISSING" %}
@@ -102,6 +102,6 @@
     </script>
 </div>
 {% endif %}
-{% include "scan_start.html" %}
-{% include "search.html" %}
+{% include "scan_start.jinja2" %}
+{% include "search.jinja2" %}
 {% endblock %}
