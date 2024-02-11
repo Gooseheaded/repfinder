@@ -1,16 +1,6 @@
 {% extends "base.html" %}
 {% block body %}
-<div class="container">
-    <div class="row">
-        <p>{{ settings.status.name }}</p>
-    </div>
-</div>
 {% if settings.status.name == "OK" %}
-<div class="container">
-    <div class="row">
-        <p>Good job.</p>
-    </div>
-</div>
 {% elif settings.status.name == "SCREP_MISSING" %}
 <!-- Modal for fixing screp -->
 <div class="container">
@@ -84,17 +74,20 @@
 <!-- Modal for settings up the app! -->
 <div class="container">
     <div class="row">
-        <div class="modal fade" id="uninitializedSettingsModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-            aria-labelledby="uninitializedSettingsModalLabel" aria-hidden="true">
+        <div class="modal fade" id="uninitializedSettingsModal" data-bs-backdrop="static" data-bs-keyboard="false"
+            tabindex="-1" aria-labelledby="uninitializedSettingsModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h1 class="modal-title fs-5" id="uninitializedSettingsModalLabel">Welcome to Repfinder!</h1>
                     </div>
                     <div class="modal-body">
-                        <p>Repfinder uses a settings file to know where to look for replays and where screp is installed.</p>
+                        <p>Repfinder uses a settings file to know where to look for replays and where screp is
+                            installed.</p>
                         <p>Please update your settings file, here:</p>
-                        <p><pre>{{ settings.filePath }}</pre></p>
+                        <p>
+                        <pre>{{ settings.filePath }}</pre>
+                        </p>
                         <p>Repfinder will not work without the proper settings!</p>
                         <p>Simply refresh this page after you are done to begin using Repfinder.</p>
                     </div>
@@ -109,17 +102,6 @@
     </script>
 </div>
 {% endif %}
-<div class="container text-center">
-    <div class="row">
-        <div class="col">
-            Column
-        </div>
-        <div class="col">
-            Column
-        </div>
-        <div class="col">
-            Column
-        </div>
-    </div>
-</div>
+{% include "scan_start.html" %}
+{% include "search.html" %}
 {% endblock %}

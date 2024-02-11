@@ -1,0 +1,30 @@
+<div class="container">
+    <div class="row justify-content-center">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col" style="width:15%">File</th>
+                    <th scope="col">Map</th>
+                    <th scope="col">Players</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for idx, replay in replays %}
+                <tr>
+                    <th scope="row">{{ idx }}</th>
+                    <td>{# replay.id #}<br/><a href="#"  data-toggle="tooltip" data-original-title="This is my tooltip" onclick="navigator.clipboard.writeText('{{ replay.path.as_posix() }}');">Copy path</a><br/>{{ replay.path }}</td>
+                    <td>{{ replay.mapName }}</td>
+                    <td>
+                        <ul>
+                            {% for aliasAndRace in replay.aliases %}
+                            <li>{{ aliasAndRace.alias }} ({{ aliasAndRace.race }})</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
