@@ -1,6 +1,10 @@
 #
 # This defines the web server"s API endpoints.
 #
+import threading
+from PyQt5.QtCore import Qt, QUrl
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout
+from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 from flask import Flask, make_response, render_template, request
 from repfinder import Repfinder
@@ -8,25 +12,22 @@ import rfsettings
 import rfdb
 import webbrowser
 import sys
-import subprocess
-from pathlib import Path
 
-app = Flask(__name__)
+flaskApp = Flask(__name__)
+qtApp = None
 settings = rfsettings.init()
 db = rfdb.RFDB(settings.dbDirPath)
 db.load()
 repfinder = Repfinder(settings, db)
-webbrowser.open_new_tab("http://localhost:5000")
 
 # This needs to happen O N C E
 # repfinder.syncDb()
 
-
-@app.route("/")
+@flaskApp.route("/")
 def index():    
     return render_template("index.jinja2", settings=settings)
 
-@app.get("/replays")
+@flaskApp.get("/replays")
 def listReplays():
     results = db.replays.copy()
     # TODO: Receive a single "query" param, and parse it into alias/map/race.
@@ -48,29 +49,51 @@ def listReplays():
         results = {}
     return render_template("replays_list.jinja2", replays=enumerate(results.values()))
 
-@app.get("/replay/<string:replayId>")
+@flaskApp.get("/replay/<string:replayId>")
 def openReplay(replayId):
     replay = repfinder.getReplayById(replayId)
     if replay is None:
          return "Open"
     webbrowser.open(replay.path)
     return "Open"
-    
 
-@app.post("/scan")
-def scanReplays():
-    repfinder.syncDb()
+@flaskApp.post("/scan")
+def indexReplays():
+    repfinder.indexReplays()
     return render_template("scan_progress.jinja2", progressPercentage=0)
     # global settings
     # repfinder.syncDb()
 
-@app.get("/scan")
+@flaskApp.get("/labels")
+def listLabels():
+    # TODO: implement
+    pass
+
+@flaskApp.post("/label")
+def createLabel():
+    # TODO: implement
+    labelText = request.args.get("text", default="")
+    labelColor = request.args.get("text", default="")
+    pass
+
+@flaskApp.post("/replay/<string:replayId>/label/<string:labelText>")
+def addLabelToReplay(replayId:str, labelText:str):
+    # TODO: implement
+    pass
+
+@flaskApp.delete("/replay/<string:replayId>/label/<string:labelText>")
+def removeLabelFromReplay(replayId:str, labelText:str):
+    # TODO: implement
+    pass
+
+
+@flaskApp.get("/scan")
 def scanStart():
     return render_template("scan_start.jinja2", progressPercentage=0)
 
 # TODO: later
 progressTest = 0
-@app.get("/scan/progress")
+@flaskApp.get("/scan/progress")
 def scanProgress():
     global progressTest
     progressTest += 100
@@ -83,3 +106,41 @@ def scanProgress():
         return resp
     
     return render_template("scan_progress.jinja2", progressPercentage=progressTest)
+
+#
+# This creates the little window.
+#
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.webView = QWebEngineView()
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(self.webView)
+        self.centralWidget = QWidget()
+        self.centralWidget.setLayout(self.layout)
+        self.setCentralWidget(self.centralWidget)
+        self.setWindowTitle("Repfinder v24.02.25")
+
+        self.flaskThread = threading.Thread(target=flaskApp.run)
+        self.flaskThread.daemon = True # The thread dies when the parent process dies.
+        self.flaskThread.start()
+
+        self.webView.load(QUrl("http://localhost:5000/"))
+    
+    def closeEvent(self, event):
+        super().closeEvent(event)  # Call base class implementation first        
+        QApplication.instance().quit()
+
+
+if __name__ == "__main__":
+    # Create and start the Qt application
+    qtApp = QApplication(sys.argv)
+
+    # Create and show the main window
+    window = MainWindow()
+    window.show()
+
+     # Run the Qt event loop
+    sys.exit(qtApp.exec_())

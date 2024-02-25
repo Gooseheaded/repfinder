@@ -16,10 +16,15 @@ class Repfinder():
 			raise Exception("Repfinder requires settings to be correct.")
 
 
-	def syncDb(self):
+	def indexReplays(self, targetDirPath:Path=None):
 		successPaths = []
 		failurePaths = []
-		dirTodos = [self.settings.replaysDirPath]
+		dirTodos = None
+		if targetDirPath is None or not targetDirPath.is_dir():
+			dirTodos = [self.settings.replaysDirPath]
+		else:
+			dirTodos = [targetDirPath]
+
 		while len(dirTodos) > 0:
 			for dirTodo in dirTodos:
 				print(f"processing replays under {dirTodo}")
