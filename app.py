@@ -1,8 +1,10 @@
 #
 # This defines the web server"s API endpoints.
 #
+from pathlib import Path
 import threading
-from PyQt5.QtCore import Qt, QUrl
+import pyperclip
+from PyQt5.QtCore import Qt, QUrl, QRect, QPoint
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
@@ -22,6 +24,17 @@ repfinder = Repfinder(settings, db)
 
 # This needs to happen O N C E
 # repfinder.syncDb()
+
+
+@flaskApp.put("/clipboard")
+def clipboard():
+    replayPath = request.form.get("replayPath", default="")
+    if (replayPath := Path(replayPath)).is_file():
+        pyperclip.copy(str(replayPath))
+        return "OK"
+    else:
+        # TODO: Log this. Suspicious error.
+        return "ERROR"
 
 @flaskApp.route("/")
 def index():    
@@ -86,6 +99,21 @@ def removeLabelFromReplay(replayId:str, labelText:str):
     # TODO: implement
     pass
 
+@flaskApp.get("/players")
+def listPlayers():
+    pass
+
+# @flaskApp.post("/players")
+# def listPlayers():
+#     pass
+
+@flaskApp.get("/player/<string:primaryAlias>")
+def getPlayer(primaryAlias:str):
+    pass
+
+@flaskApp.post("/player/<string:primaryAlias>")
+def addAliasToPlayer(primaryAlias:str):
+    newAlias = request.args.get("alias", default="")
 
 @flaskApp.get("/scan")
 def scanStart():
@@ -122,6 +150,13 @@ class MainWindow(QMainWindow):
         self.centralWidget.setLayout(self.layout)
         self.setCentralWidget(self.centralWidget)
         self.setWindowTitle("Repfinder v24.02.25")
+        
+        _w = 1600
+        _h = 900
+        screenSize = qtApp.primaryScreen().size()
+        topLeft = QPoint(screenSize.width() // 2 - _w // 2, screenSize.height() // 2 - _h // 2)
+        bottomRight = QPoint(screenSize.width() // 2 + _w // 2, screenSize.height() // 2 + _h // 2)
+        self.setGeometry(QRect(topLeft, bottomRight))
 
         self.flaskThread = threading.Thread(target=flaskApp.run)
         self.flaskThread.daemon = True # The thread dies when the parent process dies.

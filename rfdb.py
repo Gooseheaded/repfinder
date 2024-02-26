@@ -80,6 +80,10 @@ class RFDB():
         self.labelDefs = set()
         self.playerDefs = dict()
 
+        if not Path(dbPath / "rfdb.json").is_file():
+            with open(dbPath, "w") as dbf:
+                dbf.write(r"""{"replays":[], "labelDefs":[], "playerDefs":[]}""")
+
     def load(self):
         with open(Path(self._dbPath, "rfdb.json"), "r") as dbFile:
             dbJson = json.loads(dbFile.read())

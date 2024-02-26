@@ -23,15 +23,23 @@
                     <td>
                         <ul>
                             {% for aliasAndRace in replay.aliases %}
-                            <li><img src="../static/{{ aliasAndRace.race.lower() }}.svg"></img> {{ aliasAndRace.alias }}</li>
+                            <li><img src="../static/{{ aliasAndRace.race.lower() }}.svg" /> {{ aliasAndRace.alias }}
+                            </li>
                             {% endfor %}
                         </ul>
                     </td>
-                    <td>{# replay.id #}<br />
-                        <button type="button" hx-boost="true" hx-target="" hx-get="/replay/{{ replay.id }}" class="btn btn-lg btn-primary">Open</button>
-                        <button id="popOver{{ idx }}" data-bs-animation="true" type="button"
-                            class="btn btn-secondary" onclick="fadeOutPopOver({{ idx }}, '{{ replay.path.as_posix().replace('\'', '\\\'') }}')" data-bs-toggle="popover" data-bs-content="Copied successfully!">Copy path</button>
-                        <br />
+                    <td>
+                        <form>
+                            <button type="button" hx-boost="true" hx-target="" hx-get="/replay/{{ replay.id }}"
+                                class="btn btn-lg btn-primary">Open</button>
+                            <button id="popOver{{ idx }}" data-bs-animation="true" type="button"
+                                class="btn btn-secondary" hx-put="/clipboard" hx-swap="none"
+                                hx-include="#replayPath{{ idx }}" onclick="fadeOutPopOver({{ idx }})"
+                                data-bs-toggle="popover" data-bs-content="Copied successfully!">Copy path</button>
+                            <br />
+                            <input id="replayPath{{ idx }}" name="replayPath" type="text"
+                                value="{{ replay.path.as_posix().replace('\'', '\\\'') }}" hidden />
+                        </form>
                     </td>
                 </tr>
                 {% endfor %}

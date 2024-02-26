@@ -1,8 +1,8 @@
 <script>
-    const fadeOutPopOver = function (idx, path) {
+    const fadeOutPopOver = function (idx /*, path */) {
         const thisButton = document.getElementById(`popOver${idx}`);
         thisButton.disabled = true;
-        navigator.clipboard.writeText(path);
+        // navigator.clipboard.writeText(path);
 
         const bsPopOverBody = bootstrap.Popover.getOrCreateInstance(`#popOver${idx}`);
         let opacity = 1;
