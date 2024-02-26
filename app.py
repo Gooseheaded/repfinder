@@ -60,9 +60,9 @@ def listReplays():
     print(len(aliasesFilter))
     if request.args.get("aliases", default="") == "" and mapFilter == "" and raceFilter == "":
         results = {}
-    return render_template("replays_list.jinja2", replays=enumerate(results.values()))
+    return render_template("replays.jinja2", replays=enumerate(results.values()))
 
-@flaskApp.get("/replay/<string:replayId>")
+@flaskApp.get("/replays/<string:replayId>")
 def openReplay(replayId):
     replay = repfinder.getReplayById(replayId)
     if replay is None:
@@ -82,38 +82,54 @@ def listLabels():
     # TODO: implement
     pass
 
-@flaskApp.post("/label")
+@flaskApp.post("/labels")
 def createLabel():
     # TODO: implement
     labelText = request.args.get("text", default="")
-    labelColor = request.args.get("text", default="")
+    labelColor = request.form.get("color", default="")
     pass
 
-@flaskApp.post("/replay/<string:replayId>/label/<string:labelText>")
+@flaskApp.delete("/labels/<string:labelText>")
+def deleteLabel(labelText):
+    # TODO: implement
+    pass
+
+@flaskApp.post("/replays/<string:replayId>/label/<string:labelText>")
 def addLabelToReplay(replayId:str, labelText:str):
     # TODO: implement
     pass
 
-@flaskApp.delete("/replay/<string:replayId>/label/<string:labelText>")
+@flaskApp.delete("/replays/<string:replayId>/label/<string:labelText>")
 def removeLabelFromReplay(replayId:str, labelText:str):
     # TODO: implement
     pass
 
 @flaskApp.get("/players")
 def listPlayers():
+    # TODO: implement
     pass
 
-# @flaskApp.post("/players")
-# def listPlayers():
-#     pass
+@flaskApp.post("/players")
+def createPlayer():
+    # TODO: implement
+    primaryAlias = request.form.get("primaryAlias", default="")
+    pass
 
-@flaskApp.get("/player/<string:primaryAlias>")
+@flaskApp.get("/players/<string:primaryAlias>")
 def getPlayer(primaryAlias:str):
+    # TODO: implement
     pass
 
-@flaskApp.post("/player/<string:primaryAlias>")
+@flaskApp.delete("/players/<string:primaryAlias>")
+def deletePlayer(primaryAlias:str):
+    # TODO: implement
+    pass
+
+@flaskApp.post("/players/<string:primaryAlias>")
 def addAliasToPlayer(primaryAlias:str):
-    newAlias = request.args.get("alias", default="")
+    # TODO: implement
+    newAlias = request.form.get("alias", default="")
+    pass
 
 @flaskApp.get("/scan")
 def scanStart():
