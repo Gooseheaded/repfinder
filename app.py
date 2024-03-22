@@ -64,7 +64,7 @@ def listReplays():
     print(len(aliasesFilter))
     if request.args.get("aliases", default="") == "" and mapFilter == "" and raceFilter == "":
         results = {}
-    return render_template("components/replays.jinja2", replays=enumerate(results.values()))
+    return render_template("components/replays.jinja2", replays=enumerate(results.values()), replayCount=len(results.values()))
 
 @flaskApp.get("/replays/<string:replayId>")
 def openReplay(replayId):
@@ -165,7 +165,7 @@ class MainWindow(QMainWindow):
         self.centralWidget = QWidget()
         self.centralWidget.setLayout(self.layout)
         self.setCentralWidget(self.centralWidget)
-        self.setWindowTitle("Repfinder v24.02.25")
+        self.setWindowTitle("Repfinder v24.03.21")
         
         _w = 1600
         _h = 900
