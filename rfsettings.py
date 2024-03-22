@@ -1,4 +1,5 @@
 import configparser
+import platform
 from pathlib import Path
 from enum import Enum, auto
 
@@ -21,10 +22,11 @@ class Settings():
 def init() -> Settings:
     settingsFilePath = Path(Path.cwd(), "repfinder_settings.ini").resolve()
     parser = configparser.ConfigParser()
+    defaultScrepFilePath = '"./screp.exe"' if platform.system() == "Windows" else "./screp"
 
     if not settingsFilePath.is_file():
         parser['repfinder'] = {
-            'screp_path': '"./screp.exe"',
+            'screp_path': defaultScrepFilePath,
             'replays_folder': 'Your replays folder goes here',
             'db_folder': '"./"',
         }
@@ -43,7 +45,7 @@ def init() -> Settings:
     replaysDirPath = parser["repfinder"]["replays_folder"].replace("\"", "").replace("\'", "")
     dbDirPath = parser["repfinder"]["db_folder"].replace("\"", "").replace("\'", "")
 
-    if screpFilePath == '"./screp.exe"' and replaysDirPath == 'Your replays folder goes here' and dbDirPath == '"./"':
+    if screpFilePath == defaultScrepFilePath and replaysDirPath == 'Your replays folder goes here' and dbDirPath == '"./"':
         return Settings(settingsFilePath=settingsFilePath, 
                         screpFilePath=None, 
                         replaysDirPath=None, 
