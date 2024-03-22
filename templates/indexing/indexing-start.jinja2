@@ -1,0 +1,13 @@
+<div class="container text-center" hx-target="this" hx-swap="outerHTML">
+  <div class="row">
+
+    <div class="col"></div>
+    <div class="col-8">
+        <button type="button" class="btn btn-primary btn-lg" hx-post="/index" hx-indicator="#spinner">
+            Index replays
+        </button>
+        <img id="spinner" class="htmx-indicator" src="../static/gears-spinner.svg" width="100px" />
+    </div>
+    <div class="col"></div>
+  </div>
+</div>

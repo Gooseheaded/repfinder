@@ -1,14 +1,16 @@
 #
 # This defines the web server"s API endpoints.
 #
+import math
 from pathlib import Path
 import threading
+import time
 import pyperclip
 from PyQt5.QtCore import Qt, QUrl, QRect, QPoint
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
-from flask import Flask, make_response, render_template, request
+from flask import Flask, make_response, render_template, request, url_for
 from repfinder import Repfinder
 import rfsettings
 import rfdb
@@ -38,7 +40,9 @@ def clipboard():
 
 @flaskApp.route("/")
 def index():    
-    return render_template("index.jinja2", settings=settings)
+    return render_template("index.jinja2",
+                           settings=settings,
+                           urlForIndexing=url_for("indexReplays"))
 
 @flaskApp.get("/replays")
 def listReplays():
@@ -60,7 +64,7 @@ def listReplays():
     print(len(aliasesFilter))
     if request.args.get("aliases", default="") == "" and mapFilter == "" and raceFilter == "":
         results = {}
-    return render_template("replays.jinja2", replays=enumerate(results.values()))
+    return render_template("components/replays.jinja2", replays=enumerate(results.values()))
 
 @flaskApp.get("/replays/<string:replayId>")
 def openReplay(replayId):
@@ -70,12 +74,28 @@ def openReplay(replayId):
     webbrowser.open(replay.path)
     return "Open"
 
-@flaskApp.post("/scan")
+@flaskApp.post("/index")
 def indexReplays():
-    repfinder.indexReplays()
-    return render_template("scan_progress.jinja2", progressPercentage=0)
-    # global settings
-    # repfinder.syncDb()
+    # TODO: async this
+    if repfinder.indexReplays():
+        return render_template("indexing/indexing-progress.jinja2",
+                               progressPercentage=0)
+    else:
+        return render_template("indexing/indexing-start.jinja2",
+                               urlForIndexing=url_for("indexReplays"))
+
+@flaskApp.get("/index")
+def getIndexingProgress():
+    progress = repfinder.replayIndexer.getProgress()
+    if progress < 1:
+        return render_template("indexing/indexing-progress.jinja2",
+                        urlForProgress="/index",
+                        progressPercentage=math.floor(progress * 100) / 100,
+                        replaysToDoCount=repfinder.replayIndexer.replaysToDoCount,
+                        replaysDoneCount=repfinder.replayIndexer.replaysDoneCount)
+    else:
+        return render_template("indexing/indexing-summary.jinja2",
+                        replaysDoneCount=repfinder.replayIndexer.replaysDoneCount)
 
 @flaskApp.get("/labels")
 def listLabels():
@@ -130,26 +150,6 @@ def addAliasToPlayer(primaryAlias:str):
     # TODO: implement
     newAlias = request.form.get("alias", default="")
     pass
-
-@flaskApp.get("/scan")
-def scanStart():
-    return render_template("scan_start.jinja2", progressPercentage=0)
-
-# TODO: later
-progressTest = 0
-@flaskApp.get("/scan/progress")
-def scanProgress():
-    global progressTest
-    progressTest += 100
-
-    print(f"Progress is at {progressTest}%...")
-    if progressTest == 100:
-        resp = make_response(render_template("scan_progress.jinja2", progressPercentage=0))
-        resp.headers["HX-Trigger"] = "done"
-        progressTest = 0
-        return resp
-    
-    return render_template("scan_progress.jinja2", progressPercentage=progressTest)
 
 #
 # This creates the little window.

@@ -1,3 +1,4 @@
+import os
 from typing import List
 from pathlib import Path
 import hashlib
@@ -70,7 +71,7 @@ class Replay():
     def toJSON(self) -> str:
         jsonAliases = [alias.toJSON() for alias in self.aliases]
         jsonLabels = [label.toJSON() for label in self.labels]
-        return f'{{"path": "{str(self.path.as_posix())}", "mapName": "{self.mapName}", "aliases": [{", ".join(jsonAliases)}], "labels": [{", ".join(jsonAliases)}]}}'
+        return f'{{"path": "{str(self.path.as_posix())}", "mapName": "{self.mapName}", "aliases": [{", ".join(jsonAliases)}], "labels": [{", ".join(jsonLabels)}]}}'
 
 
 class RFDB():
@@ -80,9 +81,15 @@ class RFDB():
         self.labelDefs = set()
         self.playerDefs = dict()
 
+        # File is missing?
         if not Path(dbPath / "rfdb.json").is_file():
-            with open(dbPath, "w") as dbf:
+            with open(Path(dbPath / "rfdb.json"), "w") as dbf:
                 dbf.write(r"""{"replays":[], "labelDefs":[], "playerDefs":[]}""")
+        # File is empty?
+        if os.stat(Path(dbPath / "rfdb.json")).st_size == 0:
+            with open(Path(dbPath / "rfdb.json"), "w") as dbf:
+                dbf.write(r"""{"replays":[], "labelDefs":[], "playerDefs":[]}""")
+            
 
     def load(self):
         with open(Path(self._dbPath, "rfdb.json"), "r") as dbFile:
