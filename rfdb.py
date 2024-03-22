@@ -81,6 +81,10 @@ class RFDB():
         self.labelDefs = set()
         self.playerDefs = dict()
 
+        # Incomplete settings file.
+        if dbPath is None:
+            return
+
         # File is missing?
         if not Path(dbPath / "rfdb.json").is_file():
             with open(Path(dbPath / "rfdb.json"), "w") as dbf:
@@ -89,9 +93,15 @@ class RFDB():
         if os.stat(Path(dbPath / "rfdb.json")).st_size == 0:
             with open(Path(dbPath / "rfdb.json"), "w") as dbf:
                 dbf.write(r"""{"replays":[], "labelDefs":[], "playerDefs":[]}""")
+        
+        self.load()
             
 
     def load(self):
+        # Incomplete settings file.
+        if self._dbPath is None:
+            return False
+        
         with open(Path(self._dbPath, "rfdb.json"), "r") as dbFile:
             dbJson = json.loads(dbFile.read())
 

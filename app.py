@@ -24,9 +24,6 @@ db = rfdb.RFDB(settings.dbDirPath)
 db.load()
 repfinder = Repfinder(settings, db)
 
-# This needs to happen O N C E
-# repfinder.syncDb()
-
 
 @flaskApp.put("/clipboard")
 def clipboard():
