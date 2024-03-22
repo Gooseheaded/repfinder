@@ -13,8 +13,6 @@ from queue import Queue
 
 class Repfinder():
 	def __init__(self, settings: Settings, rfdb: RFDB):
-		if settings.status != SettingsStatus.OK:
-			raise Exception("Repfinder requires settings to be correct.")
 		self.settings = settings
 		self.db = rfdb
 		self.replayIndexer = ReplayIndexer()

@@ -24,9 +24,9 @@ def init() -> Settings:
 
     if not settingsFilePath.is_file():
         parser['repfinder'] = {
-            'screp_path': '<Your screp path goes here>',
-            'replays_folder': '<Your replays folder goes here>',
-            'db_folder': '<Your db folder goes here>',
+            'screp_path': '"./screp.exe"',
+            'replays_folder': 'Your replays folder goes here',
+            'db_folder': '"./"',
         }
         with open(settingsFilePath, "w") as settingsFile:
             parser.write(settingsFile)
@@ -40,6 +40,16 @@ def init() -> Settings:
     parser.read(settingsFilePath)
 
     screpFilePath = parser["repfinder"]["screp_path"].replace("\"", "").replace("\'", "")
+    replaysDirPath = parser["repfinder"]["replays_folder"].replace("\"", "").replace("\'", "")
+    dbDirPath = parser["repfinder"]["db_folder"].replace("\"", "").replace("\'", "")
+
+    if screpFilePath == '"./screp.exe"' and replaysDirPath == 'Your replays folder goes here' and dbDirPath == '"./"':
+        return Settings(settingsFilePath=settingsFilePath, 
+                        screpFilePath=None, 
+                        replaysDirPath=None, 
+                        dbDirPath=None, 
+                        status=SettingsStatus.UNINITIALIZED)
+
     screpFilePathRes = Path(screpFilePath).resolve()
     if not screpFilePathRes.is_file():
         print(f"screp could not be found. Check if the path is correct in your settings file ('{settingsFilePath}'):\n'{screpFilePath}'")
@@ -49,7 +59,6 @@ def init() -> Settings:
                         dbDirPath=None, 
                         status=SettingsStatus.SCREP_MISSING)
 
-    replaysDirPath = parser["repfinder"]["replays_folder"].replace("\"", "").replace("\'", "")
     replaysDirPathRes = Path(replaysDirPath).resolve()
     if not replaysDirPathRes.is_dir():
         print(f"The replays folder could not be found. Check if the path is correct in your settings file ('{settingsFilePath}'):\n'{replaysDirPath}'")
@@ -59,7 +68,6 @@ def init() -> Settings:
                         dbDirPath=None, 
                         status=SettingsStatus.REPLAYS_MISSING)
     
-    dbDirPath = parser["repfinder"]["db_folder"].replace("\"", "").replace("\'", "")
     dbDirPathRes = Path(dbDirPath).resolve()
     if not dbDirPathRes.is_dir():
         print(f"The DB folder could not be found. Check if the path is correct in your settings file ('{settingsFilePath}'):\n'{dbDirPath}'")

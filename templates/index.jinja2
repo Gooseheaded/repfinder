@@ -17,14 +17,14 @@
                             valid.</p>
                         <ul>
                             <li>Inside your settings file:
-                                <pre>{{ settings.filePath }}</pre>
+                                <pre>{{ settings.settingsFilePath }}</pre>
                             </li>
                             <li>Fix this value:
-                                <pre>screp_path = {{ settings.screpPath }}</pre>
+                                <pre>screp_path = {{ settings.screpFilePath }}</pre>
                             </li>
                         </ul>
                         <p>Repfinder will not work until this is fixed!</p>
-                        <p>Please update your settings file, then refresh this page to try again.</p>
+                        <p>Simply re-run Repfinder after updating your settings file.</p>
                     </div>
                 </div>
             </div>
@@ -51,14 +51,14 @@
                         <p>Your settings file is not configured properly: the replays folder is not valid.</p>
                         <ul>
                             <li>Inside your settings file:
-                                <pre>{{ settings.filePath }}</pre>
+                                <pre>{{ settings.settingsFilePath }}</pre>
                             </li>
                             <li>Fix this value:
-                                <pre>replays_folder = {{ settings.replaysPath }}</pre>
+                                <pre>replays_folder = {{ settings.replaysDirPath }}</pre>
                             </li>
                         </ul>
                         <p>Repfinder will not work until this is fixed!</p>
-                        <p>Please update your settings file, then refresh this page to try again.</p>
+                        <p>Simply re-run Repfinder after updating your settings file.</p>
                     </div>
                 </div>
             </div>
@@ -86,10 +86,10 @@
                             installed.</p>
                         <p>Please update your settings file, here:</p>
                         <p>
-                        <pre>{{ settings.filePath }}</pre>
+                        <pre>{{ settings.settingsFilePath }}</pre>
                         </p>
                         <p>Repfinder will not work without the proper settings!</p>
-                        <p>Simply refresh this page after you are done to begin using Repfinder.</p>
+                        <p>Simply re-run Repfinder after updating your settings file.</p>
                     </div>
                 </div>
             </div>

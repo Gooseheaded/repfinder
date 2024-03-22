@@ -1,7 +1,7 @@
-<div class="container text-center">
+<div class="container text-center" id="progressContainer">
     <div class="row">
         <div class="col">
-            <div hx-get="/index" hx-trigger="load delay:500ms" hx-target="this" hx-swap="outerHTML">
+            <div hx-get="/index" hx-trigger="load delay:500ms" hx-target="#progressContainer" hx-swap="outerHTML">
                 <p>Indexed {{ replaysDoneCount }} outta {{ replaysToDoCount }} replays ({{
                     progressPercentage * 100 }}%).</p>
                 <div class="progress" role="progressbar" aria-label="Scan progress"
